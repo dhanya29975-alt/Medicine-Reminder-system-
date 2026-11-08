@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "MediAlarm - Medicine Reminder",
+  "short_name": "MediAlarm",
+  "description": "Smart medicine reminder system with real-time continuous alarm sounds, snooze & adherence tracking.",
+  "theme_color": "#0d9488",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

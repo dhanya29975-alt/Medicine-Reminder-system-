@@ -1,0 +1,240 @@
+{
+  "users": [
+    {
+      "id": "usr_demo_1",
+      "name": "Jane Doe",
+      "email": "jane@example.com",
+      "password": "password123",
+      "phone": "+1 (555) 234-5678",
+      "emergencyContact": {
+        "name": "Robert Doe",
+        "relation": "Spouse",
+        "phone": "+1 (555) 987-6543"
+      },
+      "createdAt": "2026-11-08T05:33:27.410Z"
+    },
+    {
+      "id": "usr_demo_2",
+      "name": "Arthur Pendelton",
+      "email": "arthur@seniorcare.org",
+      "password": "password123",
+      "phone": "+1 (555) 345-6789",
+      "emergencyContact": {
+        "name": "Dr. Sarah Smith",
+        "relation": "Physician / Caregiver",
+        "phone": "+1 (555) 876-5432"
+      },
+      "createdAt": "2026-11-08T05:33:27.410Z"
+    }
+  ],
+  "medicines": [
+    {
+      "id": "med_1",
+      "userId": "usr_demo_1",
+      "name": "Metformin",
+      "dosage": "500 mg",
+      "form": "tablet",
+      "instructions": "With meal",
+      "startDate": "2026-11-08",
+      "endDate": "",
+      "times": [
+        "08:00",
+        "05:35",
+        "20:00"
+      ],
+      "frequency": "daily",
+      "daysOfWeek": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "color": "teal",
+      "icon": "pill",
+      "inventory": {
+        "count": 48,
+        "lowThreshold": 10,
+        "unit": "tablets"
+      },
+      "notes": "Take with morning and evening breakfast/dinner to reduce stomach upset.",
+      "active": true,
+      "createdAt": "2026-11-03T05:33:27.410Z"
+    },
+    {
+      "id": "med_2",
+      "userId": "usr_demo_1",
+      "name": "Lisinopril",
+      "dosage": "10 mg",
+      "form": "tablet",
+      "instructions": "Before meal",
+      "startDate": "2026-11-08",
+      "endDate": "",
+      "times": [
+        "09:00"
+      ],
+      "frequency": "daily",
+      "daysOfWeek": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "color": "rose",
+      "icon": "heart",
+      "inventory": {
+        "count": 22,
+        "lowThreshold": 7,
+        "unit": "tablets"
+      },
+      "notes": "Blood pressure control. Check BP periodically before taking.",
+      "active": true,
+      "createdAt": "2026-10-29T05:33:27.410Z"
+    },
+    {
+      "id": "med_3",
+      "userId": "usr_demo_1",
+      "name": "Vitamin D3 & Calcium",
+      "dosage": "2000 IU",
+      "form": "capsule",
+      "instructions": "After meal",
+      "startDate": "2026-11-08",
+      "endDate": "",
+      "times": [
+        "13:00"
+      ],
+      "frequency": "daily",
+      "daysOfWeek": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "color": "amber",
+      "icon": "sun",
+      "inventory": {
+        "count": 60,
+        "lowThreshold": 14,
+        "unit": "capsules"
+      },
+      "notes": "Bone density support.",
+      "active": true,
+      "createdAt": "2026-10-19T05:33:27.410Z"
+    },
+    {
+      "id": "med_4",
+      "userId": "usr_demo_1",
+      "name": "Atorvastatin",
+      "dosage": "20 mg",
+      "form": "tablet",
+      "instructions": "At bedtime",
+      "startDate": "2026-11-08",
+      "endDate": "",
+      "times": [
+        "21:30"
+      ],
+      "frequency": "daily",
+      "daysOfWeek": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "color": "indigo",
+      "icon": "shield",
+      "inventory": {
+        "count": 30,
+        "lowThreshold": 5,
+        "unit": "tablets"
+      },
+      "notes": "Cholesterol management. Take consistently at night.",
+      "active": true,
+      "createdAt": "2026-10-24T05:33:27.410Z"
+    }
+  ],
+  "history": [
+    {
+      "id": "hist_1",
+      "userId": "usr_demo_1",
+      "medicineId": "med_1",
+      "medicineName": "Metformin",
+      "dosage": "500 mg",
+      "scheduledTime": "2026-11-08 08:00",
+      "actualTime": "2026-11-08 08:04",
+      "status": "taken",
+      "reason": "",
+      "createdAt": "2026-11-08T01:33:27.410Z"
+    },
+    {
+      "id": "hist_2",
+      "userId": "usr_demo_1",
+      "medicineId": "med_2",
+      "medicineName": "Lisinopril",
+      "dosage": "10 mg",
+      "scheduledTime": "2026-11-08 09:00",
+      "actualTime": "2026-11-08 09:12",
+      "status": "taken",
+      "reason": "",
+      "createdAt": "2026-11-08T02:33:27.410Z"
+    },
+    {
+      "id": "hist_3",
+      "userId": "usr_demo_1",
+      "medicineId": "med_3",
+      "medicineName": "Vitamin D3 & Calcium",
+      "dosage": "2000 IU",
+      "scheduledTime": "2026-11-07 13:00",
+      "actualTime": "2026-11-07 13:02",
+      "status": "taken",
+      "reason": "",
+      "createdAt": "2026-11-07T05:33:27.410Z"
+    },
+    {
+      "id": "hist_4",
+      "userId": "usr_demo_1",
+      "medicineId": "med_4",
+      "medicineName": "Atorvastatin",
+      "dosage": "20 mg",
+      "scheduledTime": "2026-11-07 21:30",
+      "actualTime": "",
+      "status": "missed",
+      "reason": "Fell asleep early",
+      "createdAt": "2026-11-07T07:57:27.410Z"
+    }
+  ],
+  "settings": {
+    "usr_demo_1": {
+      "userId": "usr_demo_1",
+      "alarmSound": "digital",
+      "volume": 85,
+      "snoozeDurationMinutes": 5,
+      "voiceReadout": true,
+      "vibration": true,
+      "highContrast": false,
+      "largeText": false,
+      "notificationPermission": "granted"
+    },
+    "usr_demo_2": {
+      "userId": "usr_demo_2",
+      "alarmSound": "pulse",
+      "volume": 100,
+      "snoozeDurationMinutes": 5,
+      "voiceReadout": true,
+      "vibration": true,
+      "highContrast": true,
+      "largeText": true,
+      "notificationPermission": "granted"
+    }
+  }
+}

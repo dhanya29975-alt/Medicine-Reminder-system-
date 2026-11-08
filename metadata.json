@@ -1,0 +1,6 @@
+{
+  "name": "MediAlarm - Real-Time Medicine Reminder & Alarm",
+  "description": "Smart medicine reminder system with real-time continuous alarm sounds, snooze & adherence tracking, custom schedules, and emergency contacts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

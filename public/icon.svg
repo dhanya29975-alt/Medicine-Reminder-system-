@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="medGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488" />
+      <stop offset="100%" stop-color="#0f766e" />
+    </linearGradient>
+    <linearGradient id="pillGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+    <linearGradient id="pillGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f1f5f9" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#0f766e" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#medGrad)" />
+  <!-- Alarm bell bells on top left and right -->
+  <path d="M120 130 C100 110, 100 70, 130 60 C160 50, 180 80, 160 100 Z" fill="#ffffff" opacity="0.8"/>
+  <path d="M392 130 C412 110, 412 70, 382 60 C352 50, 332 80, 352 100 Z" fill="#ffffff" opacity="0.8"/>
+  <circle cx="256" cy="70" r="14" fill="#ffffff" opacity="0.9"/>
+  <!-- Central Dial Background -->
+  <circle cx="256" cy="276" r="176" fill="#ffffff" filter="url(#shadow)"/>
+  <circle cx="256" cy="276" r="154" fill="#f8fafc" stroke="#e2e8f0" stroke-width="6"/>
+  <!-- Tilted Capsule Pill -->
+  <g transform="translate(256, 276) rotate(-35) translate(-256, -276)">
+    <!-- Pill body left half -->
+    <path d="M196 220 C196 186.86 222.86 160 256 160 L256 392 C222.86 392 196 365.14 196 332 Z" fill="url(#pillGrad1)"/>
+    <!-- Pill body right half -->
+    <path d="M256 160 C289.14 160 316 186.86 316 220 L316 332 C316 365.14 289.14 392 256 392 Z" fill="url(#pillGrad2)"/>
+    <!-- Divider seam -->
+    <line x1="256" y1="160" x2="256" y2="392" stroke="#cbd5e1" stroke-width="4"/>
+    <!-- Shine reflection -->
+    <path d="M216 210 C216 195 225 180 240 176 C238 230 238 290 240 340 C225 336 216 321 216 306 Z" fill="#ffffff" opacity="0.4"/>
+  </g>
+  <!-- Medical Plus badge -->
+  <g transform="translate(320, 320)">
+    <circle cx="24" cy="24" r="32" fill="#0d9488" stroke="#ffffff" stroke-width="4"/>
+    <path d="M24 10 L24 38 M10 24 L38 24" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
