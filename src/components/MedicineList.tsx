@@ -40,10 +40,8 @@ export const MedicineList: React.FC = () => {
     setIsAddEditModalOpen(true);
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete ${name}? All associated alarms will be cancelled.`)) {
-      await deleteMedicine(id);
-    }
+  const handleDelete = async (id: string) => {
+    await deleteMedicine(id);
   };
 
   return (
@@ -156,7 +154,7 @@ export const MedicineList: React.FC = () => {
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(med.id, med.name)}
+                        onClick={() => handleDelete(med.id)}
                         className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition cursor-pointer"
                         title="Delete medicine"
                       >

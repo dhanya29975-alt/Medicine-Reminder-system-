@@ -238,18 +238,20 @@ export const Dashboard: React.FC = () => {
         {/* Total Medicines */}
         <div
           onClick={() => setCurrentTab('medicines')}
-          className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:border-teal-500/50 transition cursor-pointer group"
+          className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:border-teal-500/50 hover:shadow-md transition cursor-pointer group"
+          title="View all saved medicines"
         >
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Meds</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">Total Medicines</span>
             <div className="p-2 rounded-xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 group-hover:scale-110 transition">
               <Pill className="h-4 w-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">
-            {totalMedicines}
+          <div className="text-3xl font-black text-slate-900 dark:text-white flex items-baseline gap-1.5">
+            <span>{totalMedicines}</span>
+            <span className="text-xs font-bold text-teal-600 dark:text-teal-400">Stored</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Active prescriptions</p>
+          <p className="text-[11px] text-slate-500 mt-1 font-medium">Click to view all →</p>
         </div>
 
         {/* Today's Scheduled */}

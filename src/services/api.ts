@@ -109,23 +109,36 @@ export class ApiService {
 
   // --- Medicines ---
   public static async getMedicines(): Promise<Medicine[]> {
+    let remoteMeds: Medicine[] | null = null;
     try {
       const res = await fetch('/api/medicines', {
         headers: { Authorization: `Bearer ${this.getToken()}` }
       });
       if (res.ok) {
-        const meds = await res.json();
-        localStorage.setItem(CACHE_KEY_MEDS, JSON.stringify(meds));
-        return meds;
+        remoteMeds = await res.json();
       }
     } catch (e) {
-      console.warn('Using cached medicines:', e);
+      console.warn('Network fetch /api/medicines failed, using cached medicines:', e);
     }
-    const cached = localStorage.getItem(CACHE_KEY_MEDS);
-    return cached ? JSON.parse(cached) : [];
+
+    const cachedRaw = localStorage.getItem(CACHE_KEY_MEDS);
+    const cachedList: Medicine[] = cachedRaw ? JSON.parse(cachedRaw) : [];
+
+    if (remoteMeds && Array.isArray(remoteMeds)) {
+      // Merge remote with local cache so newly added local medicines are never erased
+      const mergedMap = new Map<string, Medicine>();
+      cachedList.forEach((m) => mergedMap.set(m.id, m));
+      remoteMeds.forEach((m) => mergedMap.set(m.id, m));
+      const combined = Array.from(mergedMap.values());
+      localStorage.setItem(CACHE_KEY_MEDS, JSON.stringify(combined));
+      return combined;
+    }
+
+    return cachedList;
   }
 
   public static async createMedicine(medData: Partial<Medicine>): Promise<Medicine> {
+    let newMed: Medicine | null = null;
     try {
       const res = await fetch('/api/medicines', {
         method: 'POST',
@@ -136,34 +149,49 @@ export class ApiService {
         body: JSON.stringify(medData)
       });
       if (res.ok) {
-        return await res.json();
+        newMed = await res.json();
       }
     } catch (e) {
-      console.warn('API createMedicine failed, saving locally:', e);
+      console.warn('API createMedicine network failure, saving to local cache:', e);
     }
-    const localNewMed: Medicine = {
-      id: `med_${Date.now()}`,
-      userId: this.getToken(),
-      name: medData.name || 'Medicine',
-      dosage: medData.dosage || '1 dose',
-      form: medData.form || 'tablet',
-      instructions: medData.instructions || 'With meal',
-      startDate: medData.startDate || new Date().toISOString().split('T')[0],
-      endDate: medData.endDate || '',
-      times: medData.times || ['08:00'],
-      frequency: medData.frequency || 'daily',
-      daysOfWeek: medData.daysOfWeek || [0, 1, 2, 3, 4, 5, 6],
-      color: medData.color || 'teal',
-      icon: medData.icon || 'pill',
-      inventory: medData.inventory || { count: 30, lowThreshold: 5, unit: 'doses' },
-      notes: medData.notes || '',
-      active: true,
-      createdAt: new Date().toISOString()
-    };
-    return localNewMed;
+
+    if (!newMed) {
+      newMed = {
+        id: `med_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        userId: this.getToken(),
+        name: medData.name ? String(medData.name).trim() : 'Medicine',
+        dosage: (medData.dosage && String(medData.dosage).trim()) || '1 dose',
+        form: medData.form || 'tablet',
+        instructions: medData.instructions || 'With meal',
+        startDate: medData.startDate || new Date().toISOString().split('T')[0],
+        endDate: medData.endDate || '',
+        times: medData.times && medData.times.length ? medData.times : ['08:00'],
+        frequency: medData.frequency || 'daily',
+        daysOfWeek: medData.daysOfWeek && medData.daysOfWeek.length ? medData.daysOfWeek : [0, 1, 2, 3, 4, 5, 6],
+        color: medData.color || 'teal',
+        icon: medData.icon || 'pill',
+        inventory: medData.inventory || { count: 30, lowThreshold: 7, unit: 'doses' },
+        notes: medData.notes || '',
+        active: true,
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    // Synchronously update localStorage cache so it can never be lost
+    try {
+      const cached = localStorage.getItem(CACHE_KEY_MEDS);
+      const list: Medicine[] = cached ? JSON.parse(cached) : [];
+      const updated = [...list.filter((m) => m.id !== newMed!.id), newMed];
+      localStorage.setItem(CACHE_KEY_MEDS, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to write to localStorage:', e);
+    }
+
+    return newMed;
   }
 
   public static async updateMedicine(id: string, updates: Partial<Medicine>): Promise<Medicine> {
+    let updatedMed: Medicine | null = null;
     try {
       const res = await fetch(`/api/medicines/${id}`, {
         method: 'PUT',
@@ -174,20 +202,48 @@ export class ApiService {
         body: JSON.stringify(updates)
       });
       if (res.ok) {
-        return await res.json();
+        updatedMed = await res.json();
       }
     } catch (e) {}
-    return { ...(updates as any), id };
+
+    // Synchronously update localStorage cache
+    try {
+      const cached = localStorage.getItem(CACHE_KEY_MEDS);
+      const list: Medicine[] = cached ? JSON.parse(cached) : [];
+      const updatedList = list.map((m) => {
+        if (m.id === id) {
+          return updatedMed || { ...m, ...updates };
+        }
+        return m;
+      });
+      localStorage.setItem(CACHE_KEY_MEDS, JSON.stringify(updatedList));
+      if (!updatedMed) {
+        const found = updatedList.find((m) => m.id === id);
+        if (found) return found;
+      }
+    } catch (e) {}
+
+    return updatedMed || ({ ...(updates as any), id } as Medicine);
   }
 
   public static async deleteMedicine(id: string): Promise<boolean> {
     try {
-      const res = await fetch(`/api/medicines/${id}`, {
+      await fetch(`/api/medicines/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${this.getToken()}` }
       });
-      if (res.ok) return true;
     } catch (e) {}
+
+    // Synchronously update localStorage cache
+    try {
+      const cached = localStorage.getItem(CACHE_KEY_MEDS);
+      if (cached) {
+        const list: Medicine[] = JSON.parse(cached);
+        const filtered = list.filter((m) => m.id !== id);
+        localStorage.setItem(CACHE_KEY_MEDS, JSON.stringify(filtered));
+      }
+    } catch (e) {}
+
     return true;
   }
 

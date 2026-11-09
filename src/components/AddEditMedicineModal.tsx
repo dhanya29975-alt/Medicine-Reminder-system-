@@ -230,38 +230,34 @@ export const AddEditMedicineModal: React.FC = () => {
       setFormError('Please enter medicine name');
       return;
     }
-    if (!dosage.trim()) {
-      setFormError('Please enter dosage');
-      return;
-    }
-    if (times.length === 0) {
-      setFormError('Please add at least one convenient alarm time');
-      return;
-    }
+
+    // Friendly defaults so entering a medicine name always stores successfully
+    const finalDosage = dosage.trim() || '1 dose';
+    const finalTimes = times.length > 0 ? times.sort() : ['08:00'];
 
     setIsSubmitting(true);
     try {
       await saveMedicine({
         name: name.trim(),
-        dosage: dosage.trim(),
+        dosage: finalDosage,
         form,
         instructions,
-        startDate,
+        startDate: startDate || new Date().toISOString().split('T')[0],
         endDate: isOngoing ? '' : endDate,
-        times: times.sort(),
+        times: finalTimes,
         frequency,
-        daysOfWeek,
+        daysOfWeek: daysOfWeek.length > 0 ? daysOfWeek : [0, 1, 2, 3, 4, 5, 6],
         color,
         inventory: {
-          count: Number(inventoryCount) || 0,
-          lowThreshold: Number(lowThreshold) || 5,
+          count: Number(inventoryCount) || 30,
+          lowThreshold: Number(lowThreshold) || 7,
           unit: form === 'syrup' || form === 'drops' ? 'ml' : 'doses'
         },
         notes: notes.trim(),
         active: true
       });
     } catch (err) {
-      console.error(err);
+      console.error('Error saving medicine:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -578,6 +574,45 @@ export const AddEditMedicineModal: React.FC = () => {
                     Cancel Editing
                   </button>
                 )}
+              </div>
+
+              {/* Direct Clock Picker */}
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-teal-600 shrink-0" />
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                    Clock Dial / Pick:
+                  </span>
+                  <input
+                    type="time"
+                    value={nativeTimeInput}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setNativeTimeInput(val);
+                      if (val) {
+                        const [h, m] = val.split(':').map(Number);
+                        setPickerPeriod(h >= 12 ? 'PM' : 'AM');
+                        const h12 = h % 12 === 0 ? 12 : h % 12;
+                        setPickerHour(h12);
+                        setPickerMinute(m);
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-mono text-xs font-black text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (nativeTimeInput) {
+                      handleAddDirectTime(nativeTimeInput);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black shadow-xs transition active:scale-95 cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add Convenient Time</span>
+                </button>
               </div>
 
               {/* Time Stepper Controls */}

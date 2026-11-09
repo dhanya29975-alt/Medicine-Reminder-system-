@@ -351,11 +351,15 @@ async function startServer() {
     return res.json({ user: db.users[idx] });
   });
 
-  // --- Medicine Management APIs ---
+  // --- Medicine Management APIs (Public & User-Scoped) ---
   app.get('/api/medicines', (req, res) => {
     const userId = getUserIdFromReq(req);
     const db = readDb();
-    const medicines = db.medicines.filter((m: any) => m.userId === userId);
+    // Return all medicines for this user plus all shared/public medicines
+    const medicines = db.medicines.filter((m: any) => {
+      if (!m.userId || m.userId === 'public' || m.userId === 'usr_demo_1') return true;
+      return m.userId === userId;
+    });
     res.json(medicines);
   });
 
@@ -377,23 +381,27 @@ async function startServer() {
       notes
     } = req.body;
 
-    if (!name || !dosage || !times || !times.length) {
-      return res.status(400).json({ error: 'Name, dosage, and at least one alarm time are required' });
+    if (!name || !String(name).trim()) {
+      return res.status(400).json({ error: 'Medicine name is required' });
     }
+
+    const safeTimes = Array.isArray(times) && times.length > 0
+      ? times.sort()
+      : (times ? [times] : ['08:00']);
 
     const db = readDb();
     const newMed = {
-      id: `med_${Date.now()}`,
-      userId,
-      name,
-      dosage,
+      id: `med_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      userId: userId || 'public',
+      name: String(name).trim(),
+      dosage: (dosage && String(dosage).trim()) || '1 dose',
       form: form || 'tablet',
       instructions: instructions || 'With meal',
       startDate: startDate || new Date().toISOString().split('T')[0],
       endDate: endDate || '',
-      times: Array.isArray(times) ? times.sort() : [times],
+      times: safeTimes,
       frequency: frequency || 'daily',
-      daysOfWeek: daysOfWeek || [0, 1, 2, 3, 4, 5, 6],
+      daysOfWeek: daysOfWeek && daysOfWeek.length ? daysOfWeek : [0, 1, 2, 3, 4, 5, 6],
       color: color || 'teal',
       icon: icon || 'pill',
       inventory: inventory || { count: 30, lowThreshold: 7, unit: 'doses' },
@@ -408,10 +416,9 @@ async function startServer() {
   });
 
   app.put('/api/medicines/:id', (req, res) => {
-    const userId = getUserIdFromReq(req);
     const { id } = req.params;
     const db = readDb();
-    const idx = db.medicines.findIndex((m: any) => m.id === id && m.userId === userId);
+    const idx = db.medicines.findIndex((m: any) => m.id === id);
     if (idx === -1) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
@@ -420,7 +427,6 @@ async function startServer() {
       ...db.medicines[idx],
       ...req.body,
       id,
-      userId,
       updatedAt: new Date().toISOString()
     };
 
@@ -429,11 +435,10 @@ async function startServer() {
   });
 
   app.delete('/api/medicines/:id', (req, res) => {
-    const userId = getUserIdFromReq(req);
     const { id } = req.params;
     const db = readDb();
     const initialLen = db.medicines.length;
-    db.medicines = db.medicines.filter((m: any) => !(m.id === id && m.userId === userId));
+    db.medicines = db.medicines.filter((m: any) => m.id !== id);
 
     if (db.medicines.length === initialLen) {
       return res.status(404).json({ error: 'Medicine not found' });
@@ -443,12 +448,15 @@ async function startServer() {
     return res.json({ success: true, id });
   });
 
-  // --- Medicine History APIs ---
+  // --- Medicine History APIs (Public & User-Scoped) ---
   app.get('/api/history', (req, res) => {
     const userId = getUserIdFromReq(req);
     const db = readDb();
     const history = db.history
-      .filter((h: any) => h.userId === userId)
+      .filter((h: any) => {
+        if (!h.userId || h.userId === 'public' || h.userId === 'usr_demo_1') return true;
+        return h.userId === userId;
+      })
       .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     res.json(history);
   });
@@ -463,7 +471,7 @@ async function startServer() {
     const db = readDb();
     const newEntry = {
       id: `hist_${Date.now()}`,
-      userId,
+      userId: userId || 'public',
       medicineId: medicineId || '',
       medicineName,
       dosage: dosage || '',
@@ -488,10 +496,9 @@ async function startServer() {
   });
 
   app.delete('/api/history/:id', (req, res) => {
-    const userId = getUserIdFromReq(req);
     const { id } = req.params;
     const db = readDb();
-    db.history = db.history.filter((h: any) => !(h.id === id && h.userId === userId));
+    db.history = db.history.filter((h: any) => h.id !== id);
     writeDb(db);
     return res.json({ success: true, id });
   });

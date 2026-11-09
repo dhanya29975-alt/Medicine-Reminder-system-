@@ -60,8 +60,22 @@ const AppContext = createContext<AppContextType | null>(null);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
-  const [history, setHistory] = useState<MedicineHistoryItem[]>([]);
+  const [medicines, setMedicines] = useState<Medicine[]>(() => {
+    try {
+      const cached = localStorage.getItem('medialarm_meds');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [history, setHistory] = useState<MedicineHistoryItem[]>(() => {
+    try {
+      const cached = localStorage.getItem('medialarm_history');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   const [settings, setSettings] = useState<UserSettings>({
     userId: 'usr_demo_1',
     alarmSound: 'digital',
@@ -186,6 +200,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Ring the alarm immediately with audio & voice
   const startRingingAlarm = useCallback((dose: ActiveAlarmDose) => {
     setActiveAlarm(dose);
+    // Flash browser tab title so user notices it when viewing any other website/tab
+    document.title = `🚨 [ALARM RINGING] Time for ${dose.medicine.name}!`;
     // Play continuous synthesizer alarm sound
     audioEngine.startAlarm(settings.alarmSound, settings.volume, settings.vibration);
     // If voiceReadout is on, speak medicine name and instructions
@@ -290,6 +306,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const handleTaken = async (dose: ActiveAlarmDose) => {
     audioEngine.stopAlarm();
     setActiveAlarm(null);
+    document.title = 'MediAlarm - Real-Time Medicine Reminder & Alarm';
 
     // Remove from snoozed list if it was snoozed
     setSnoozedList((prev) => prev.filter((s) => s.medicine.id !== dose.medicine.id));
@@ -341,6 +358,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const handleSnooze = (dose: ActiveAlarmDose) => {
     audioEngine.stopAlarm();
     setActiveAlarm(null);
+    document.title = 'MediAlarm - Real-Time Medicine Reminder & Alarm';
 
     const snoozeMinutes = settings.snoozeDurationMinutes || 5;
     const ringAt = Date.now() + snoozeMinutes * 60 * 1000;
@@ -362,6 +380,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const handleSkip = async (dose: ActiveAlarmDose, reason: string = 'Skipped by user') => {
     audioEngine.stopAlarm();
     setActiveAlarm(null);
+    document.title = 'MediAlarm - Real-Time Medicine Reminder & Alarm';
 
     // Remove from snoozed list
     setSnoozedList((prev) => prev.filter((s) => s.medicine.id !== dose.medicine.id));
@@ -438,16 +457,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const stopActiveAlarmSound = () => {
     audioEngine.stopAlarm();
+    document.title = 'MediAlarm - Real-Time Medicine Reminder & Alarm';
   };
 
   // CRUD for Medicines
   const saveMedicine = async (medData: Partial<Medicine>) => {
     if (editingMedicine?.id) {
       const updated = await ApiService.updateMedicine(editingMedicine.id, medData);
-      setMedicines((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+      setMedicines((prev) => {
+        const nextList = prev.map((m) => (m.id === updated.id ? updated : m));
+        try {
+          localStorage.setItem('medialarm_meds', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
+      });
     } else {
       const created = await ApiService.createMedicine(medData);
-      setMedicines((prev) => [...prev, created]);
+      setMedicines((prev) => {
+        const nextList = [...prev.filter((m) => m.id !== created.id), created];
+        try {
+          localStorage.setItem('medialarm_meds', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
+      });
     }
     setEditingMedicine(null);
     setIsAddEditModalOpen(false);
@@ -455,7 +487,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const deleteMedicine = async (id: string) => {
     await ApiService.deleteMedicine(id);
-    setMedicines((prev) => prev.filter((m) => m.id !== id));
+    setMedicines((prev) => {
+      const nextList = prev.filter((m) => m.id !== id);
+      try {
+        localStorage.setItem('medialarm_meds', JSON.stringify(nextList));
+      } catch (e) {}
+      return nextList;
+    });
   };
 
   const deleteHistoryItem = async (id: string) => {

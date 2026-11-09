@@ -161,6 +161,72 @@
       "notes": "Cholesterol management. Take consistently at night.",
       "active": true,
       "createdAt": "2026-10-24T05:33:27.410Z"
+    },
+    {
+      "id": "med_1794194406097",
+      "userId": "usr_demo_1",
+      "name": "Aspirin",
+      "dosage": "100mg",
+      "form": "tablet",
+      "instructions": "With meal",
+      "startDate": "2026-11-09",
+      "endDate": "",
+      "times": [
+        "09:00"
+      ],
+      "frequency": "daily",
+      "daysOfWeek": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "color": "teal",
+      "icon": "pill",
+      "inventory": {
+        "count": 30,
+        "lowThreshold": 7,
+        "unit": "doses"
+      },
+      "notes": "",
+      "active": true,
+      "createdAt": "2026-11-09T03:20:06.097Z"
+    },
+    {
+      "id": "med_1794194727789_0cp1",
+      "userId": "usr_demo_1",
+      "name": "Omega 3 Fish Oil",
+      "dosage": "1 dose",
+      "form": "tablet",
+      "instructions": "With meal",
+      "startDate": "2026-11-09",
+      "endDate": "",
+      "times": [
+        "08:00"
+      ],
+      "frequency": "daily",
+      "daysOfWeek": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "color": "teal",
+      "icon": "pill",
+      "inventory": {
+        "count": 30,
+        "lowThreshold": 7,
+        "unit": "doses"
+      },
+      "notes": "",
+      "active": true,
+      "createdAt": "2026-11-09T03:25:27.789Z"
     }
   ],
   "history": [
