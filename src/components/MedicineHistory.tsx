@@ -53,7 +53,6 @@ export const MedicineHistory: React.FC = () => {
   // CSV Export for Doctor / Caregiver
   const exportCSV = () => {
     if (history.length === 0) {
-      alert('No history records to export.');
       return;
     }
     const headers = ['Medicine Name', 'Dosage', 'Scheduled Time', 'Actual Response Time', 'Status', 'Reason/Notes'];

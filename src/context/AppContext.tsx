@@ -148,7 +148,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Request system notification permission
   const requestNotificationPermission = async (): Promise<NotificationPermission> => {
     if (!('Notification' in window)) {
-      alert('Notifications are not supported in this browser.');
+      console.warn('Notifications are not supported in this browser.');
       return 'denied';
     }
     const perm = await Notification.requestPermission();

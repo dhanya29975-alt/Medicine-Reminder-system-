@@ -2,11 +2,32 @@
 const CACHE_NAME = 'medialarm-v1';
 
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll([
+        '/',
+        '/manifest.json',
+        '/pwa-192x192.png',
+        '/icon.svg'
+      ]).catch(() => {});
+    })
+  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
+});
+
+// Required fetch listener for Chromium/Android PWA installability criteria
+self.addEventListener('fetch', (event) => {
+  // Let network handle requests with fallback
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {

@@ -80,6 +80,7 @@ export const AddEditMedicineModal: React.FC = () => {
   const [lowThreshold, setLowThreshold] = useState<number>(7);
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (editingMedicine) {
@@ -173,9 +174,10 @@ export const AddEditMedicineModal: React.FC = () => {
   // Remove time
   const handleRemoveTime = (timeToRemove: string) => {
     if (times.length <= 1) {
-      alert('Your medicine must have at least one alarm time.');
+      setFormError('Your medicine must have at least one alarm time.');
       return;
     }
+    setFormError(null);
     setTimes(times.filter((t) => t !== timeToRemove));
     if (editingTimeIndex !== null) setEditingTimeIndex(null);
   };
@@ -223,16 +225,17 @@ export const AddEditMedicineModal: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     if (!name.trim()) {
-      alert('Please enter medicine name');
+      setFormError('Please enter medicine name');
       return;
     }
     if (!dosage.trim()) {
-      alert('Please enter dosage');
+      setFormError('Please enter dosage');
       return;
     }
     if (times.length === 0) {
-      alert('Please add at least one convenient alarm time');
+      setFormError('Please add at least one convenient alarm time');
       return;
     }
 
@@ -316,6 +319,20 @@ export const AddEditMedicineModal: React.FC = () => {
             <X className="h-5 w-5" />
           </button>
         </div>
+
+        {/* Inline Form Error Banner */}
+        {formError && (
+          <div className="mt-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center justify-between">
+            <span>{formError}</span>
+            <button
+              type="button"
+              onClick={() => setFormError(null)}
+              className="text-rose-500 hover:text-rose-700 font-bold ml-2 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Quick Suggestion Pills for New Medicine */}
         {!editingMedicine && (

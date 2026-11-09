@@ -19,7 +19,6 @@ import {
   Smartphone
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { PWAInstallButton } from './PWAInstallButton';
 import { InstallPublishModal } from './InstallPublishModal';
 
 export const Navbar: React.FC = () => {
@@ -175,18 +174,15 @@ export const Navbar: React.FC = () => {
             <span>Add Medicine</span>
           </button>
 
-          {/* Install & Publish Modal Button */}
+          {/* Prominent Install & Publish App Button */}
           <button
             onClick={() => setIsInstallModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/70 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-bold transition active:scale-95 cursor-pointer shadow-xs"
-            title="Install app on mobile or desktop, scan QR code, or view publishing details"
+            className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-teal-600/30 transition active:scale-95 cursor-pointer whitespace-nowrap"
+            title="Install MediAlarm as mobile app, scan QR code, or view publish options"
           >
-            <Download className="h-4 w-4 text-teal-600" />
-            <span className="hidden sm:inline">Install & Publish</span>
+            <Download className="h-4 w-4" />
+            <span>Install App</span>
           </button>
-
-          {/* PWA Direct Prompt Button */}
-          <PWAInstallButton />
 
           {/* User Profile / Menu */}
           <div className="relative">
